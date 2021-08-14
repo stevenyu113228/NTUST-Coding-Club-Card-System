@@ -1,0 +1,141 @@
+<!-- 
+    因為估狗表單安全性問題
+    所以開啟chrome需要安裝 Allow-Control-Allow-Origin: *
+    Firefox要安裝 Cross Domain - CORS    
+    -->
+<!doctype html>
+<html>
+    <head> 
+        <meta charset = 'utf-8'>
+        <title>台科大程式設計社刷卡報到系統</title>
+        <style type="text/css">
+            body{
+                background-color: black;
+                text-align: center;
+            }
+            #test{
+                font-family:Microsoft JhengHei;
+                color: white;
+                width: 1000px;
+                height: 600px;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                margin: -300px 0 0 -500px;
+                font-size: 100px;
+            }
+
+        </style>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.1/jquery.min.js"></script>
+        <script>
+            var succ1 = "<h2>報到成功!</h2><p>歡迎";
+            var succ2 = "</p>"
+            var welcome = "<h2>程式設計社課</h2><p>請刷卡報到</p>" 
+            var err = "<h2>報到失敗!</h2><p>卡片未登記</p>" 
+			var key = [
+						'0000000000',
+						'3333333333',
+					];
+            
+            
+            //這邊填卡片代號
+			var dict = {
+				'0000000000': '喵喵喵',
+				'3333333333': '汪汪汪',
+			};
+
+            
+            
+            
+            
+            
+              //這邊填人名、代號對照
+            var input = ''
+            function sleep(milliseconds) {
+                var start = new Date().getTime();
+                for (var i = 0; i < 1e7; i++) {
+                    if ((new Date().getTime() - start) > milliseconds){
+                    break;
+                    }
+                }
+            }
+
+            function if_success(){
+                document.getElementById('test').innerHTML= (succ1+dict[input]+succ2);
+                //document.getElementById('test').style.color = 'black';
+                document.body.style.backgroundColor = "green"; 
+            }
+
+            function if_error(){
+                document.getElementById('test').innerHTML=err;
+                document.body.style.backgroundColor = "red"; 
+                console.log(input);
+            }
+
+            function wait_and_back(yn){
+
+                /*
+                $.post("https://docs.google.com/forms/d/e/{google_sheet_id}/formResponse",
+                {
+                    'entry.1177981969':input,
+                    'entry.610972581': yn
+                });
+                */
+                url = "https://docs.google.com/forms/d/e/{google_sheet_id}}/formResponse";
+                url += "?entry.1177981969=";
+                url += input;
+                url += "&entry.610972581=";
+                url += yn;
+                url += "&submit=Submit";
+
+                $.get(url);
+
+                            
+
+
+                setTimeout(function(){
+                    document.getElementById('test').innerHTML=welcome;
+                    //document.getElementById('test').style.color = 'white';
+                    document.body.style.backgroundColor = "black";
+                    input = '';
+                    },3000);
+             
+
+            }
+           
+
+            function check(input){
+                if (key.includes(input)){  // key內有input
+                    if_success();
+                    wait_and_back('Y')
+                }
+                else{
+                    if_error();
+                    wait_and_back('N')
+                }
+
+            }
+          function keyy(e){
+                var keycode;
+                if (window.event) keycode = window.event.keyCode;
+                else if (e) keycode = e.which;
+                else return true;
+                if (keycode == 13){ // Enter
+                    check(input)
+                }
+                else{
+                    //input += String.fromCharCode(keycode);
+                    input += String.fromCharCode(keycode);
+                }
+                  
+            }
+        </script>
+    </head>
+    <body onKeyPress="keyy(event)">
+        <div id ='test'>
+            <h2>程式設計社課</h2>
+            <p>請刷卡報到</p>
+        </div>
+        <textbox id="textArea"></textbox>
+</body>
+</html>
